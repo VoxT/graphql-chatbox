@@ -14,6 +14,7 @@ const axios = require('axios');
 const moment = require('moment');
 const { PubSub, withFilter } = require('graphql-subscriptions');
 const { makeExecutableSchema } = require("graphql-tools");
+const path = require('path');
 
 class User {
     constructor(domain, firstLogin, lastLogin) {
@@ -24,7 +25,7 @@ class User {
             content: "No message yet.",
             from: domain,
             to: domain,
-            createdAt: lastLogin   
+            createdAt: lastLogin
         }
     }
 }
@@ -59,9 +60,9 @@ class Database {
     }
     getLastMessage(currentUser, loginUser) {
         console.log("Domain: ", currentUser, loginUser);
-        let messages =  this.messages.filter(msg => (msg.from === currentUser && msg.to === loginUser)
-        || (msg.from === loginUser && msg.to === currentUser));
-        return messages.length > 0 ? messages[messages.length - 1] : {content: "No message yet.", from: currentUser, to: loginUser, createdAt: moment().format("YYYY-MM-DD HH:mm")}
+        let messages = this.messages.filter(msg => (msg.from === currentUser && msg.to === loginUser)
+            || (msg.from === loginUser && msg.to === currentUser));
+        return messages.length > 0 ? messages[messages.length - 1] : { content: "No message yet.", from: currentUser, to: loginUser, createdAt: moment().format("YYYY-MM-DD HH:mm") }
     }
 }
 
@@ -143,7 +144,7 @@ const resolvers = {
             subscribe: withFilter(
                 () => pubsub.asyncIterator('messageAdded'),
                 (payload, variables) => {
-                    console.log(payload, "----",  variables)
+                    console.log(payload, "----", variables)
                     return payload.from === variables.domain || payload.to === variables.domain;
                 }
             )
@@ -179,12 +180,17 @@ const validateUser = (domain, otp) => {
 const PORT = 4000;
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 const app = express();
+
+app.use(express.static(path.join(__dirname, 'build')));
 app.use('*', cors({ origin: `http://localhost:3000` }));
 app.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
 app.use('/graphiql', graphiqlExpress({
     endpointURL: '/graphql',
     subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`
 }));
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 // Wrap the Express server
 const ws = createServer(app);
 ws.listen(PORT, () => {

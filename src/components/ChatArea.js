@@ -8,11 +8,11 @@ import gql from 'graphql-tag';
 import notifyMe from './NotifyMe';
 
 const USER_SUBSCRIPTION = gql`
-  subscription userAddedSubscription {
+  subscription userAddedSubscription($domain: String!) {
     userAdded {
       domain
       lastLogin
-      message {
+      message(domain: $domain) {
         content
         from
         to
@@ -39,6 +39,7 @@ class ChatArea extends React.Component {
     subscribeToMewUser = () => {
         this.props.subscribeToMore({
             document: USER_SUBSCRIPTION,
+            variables: { domain: this.props.domain },
             updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev;
                 const userAdded = subscriptionData.data.userAdded;
@@ -57,10 +58,11 @@ class ChatArea extends React.Component {
                 if (!subscriptionData.data) return prev;
                 const messageAdded = subscriptionData.data.messageAdded;
 
-                if (messageAdded.from !== this.state.activeChatDomain
-                    && (messageAdded.from !== localStorage.getItem("domain"))) {
+                if (!document.hasFocus()
+                    || (messageAdded.from !== this.state.activeChatDomain
+                        && (messageAdded.from !== localStorage.getItem("domain")))) {
                     notifyMe(messageAdded.from, messageAdded.content, messageAdded.from, (domain) => {
-                        this.setState({activeChatDomain: domain})
+                        this.setState({ activeChatDomain: domain })
                     })
                 }
 
