@@ -20,7 +20,7 @@ import notifyMe from './NotifyMe.js';
 
 
 const httpUri = `https://graphql-chating.herokuapp.com/graphql`;
-const wsUri = 'ws://graphql-chating.herokuapp.com/subscriptions';
+const wsUri = 'wss://graphql-chating.herokuapp.com/subscriptions';
 class App extends Component {
 
   render() {
