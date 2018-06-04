@@ -32,7 +32,8 @@
   },
   "scripts": {
     "api": "nodemon src/server.js --watch src --exec babel-node",
-    "start": "react-scripts start",
+    "heroku-postbuild": "cd graphql-chatbox && npm install && npm run build",
+    "start": "node index.js",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
