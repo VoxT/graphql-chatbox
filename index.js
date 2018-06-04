@@ -177,7 +177,7 @@ const validateUser = (domain, otp) => {
 // db.addUser("thieuvt", moment().format("YYYY/MM/DD HH:mm:ss"));
 // db.addUser("dnhcc", moment().format("YYYY/MM/DD HH:mm:ss"));
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 const app = express();
 
