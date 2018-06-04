@@ -19,8 +19,8 @@ import ChatAreaWithData from './ChatAreaWithData.js';
 import notifyMe from './NotifyMe.js';
 
 
-const httpUri = `http://localhost:4000/graphql`;
-const wsUri = 'ws://localhost:4000/subscriptions';
+const httpUri = `https://graphql-chating.herokuapp.com/graphql`;
+const wsUri = 'ws://graphql-chating.herokuapp.com/subscriptions';
 class App extends Component {
 
   render() {
